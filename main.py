@@ -1,7 +1,7 @@
 import os
 from osgeo import gdal
 from PIL import Image
-import pandas
+import pyperclip as pc
 
 
 class TifToUnreal:
@@ -24,7 +24,8 @@ class TifToUnreal:
         self.crop_image()
 
         z_scale = self.calc_z_scale(limits[0], limits[1])
-        pandas.DataFrame([z_scale]).to_clipboard()
+        # copies z scale to clipboard for ease of use
+        pc.copy(z_scale)
 
         print(f"Map converted for Unreal!\n "
               f"It can be found at {output_path}\n "
@@ -35,13 +36,8 @@ class TifToUnreal:
         band = self.geo_tif.GetRasterBand(1)
         # Get raster statistics
         stats = band.GetStatistics(True, True)
-
-        # print the min, max
-        tif_min = stats[0]
-        tif_max = stats[1]
-
         # outputs array of max and min
-        return tif_min, tif_max
+        return stats
 
     @staticmethod
     def calc_z_scale(min, max):
